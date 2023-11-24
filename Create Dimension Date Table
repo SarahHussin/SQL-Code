@@ -1,0 +1,38 @@
+-- Create DIM Date : 
+
+create table DIM_Date (
+[Date] date , 
+[year] int , 
+[Month] int , 
+[Day] int , 
+[Quarter] VARCHAR(5) , 
+[Month Name] varchar(10), 
+[Day Name] varchar (10) 
+)
+
+Declare @StartDate date , 
+	    @EndDate date 
+set @StartDate = (select min(orderDate) from Orders)
+set @EndDate  = (select max(requiredDate) from Orders)
+
+while @StartDate <= @EndDate 
+begin 
+insert into DIM_Date 
+([Date]  , 
+[year] , 
+[Month]  , 
+[Day] , 
+[Quarter] , 
+[Month Name] , 
+[Day Name] )
+values ( 
+	@StartDate , 
+	year(@StartDate) ,
+	month (@StartDate),
+	day(@StartDate),
+	'Q'+ cast(datepart(quarter , @StartDate) as varchar(5)),
+	DATENAME(month , @StartDate), 
+	DATENAME(WEEKDAY , @StartDate)
+	)
+set @StartDate = DATEADD(DAY,1, @StartDate)
+end 
